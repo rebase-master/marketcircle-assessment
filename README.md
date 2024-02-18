@@ -19,13 +19,13 @@ Using the sample data provided, create a Rails 7 app with the following:
 
 Your models should look something like this:
 
-![Entities](/assets/entities.png)
+![Entities](app/assets/entities.png)
 
 ## Bonus (Optional) Tasks
 
 Demonstrate your Hotwire / Turbo Frame skills by making a simple Master / Detail display, where only the detail is reloaded when clicking on different master items.
 
-![Master-Detail](/assets/master-detail.png)
+![Master-Detail](app/assets/master-detail.png)
 
 ## Considerations / Recommendations
 
