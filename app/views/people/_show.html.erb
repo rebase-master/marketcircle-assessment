@@ -1,0 +1,12 @@
+<div id="person-details">
+  <% if details %>
+    <table class="table table-warning table-hover table-striped-columns">
+      <tr class="py-2"><td><strong>Title:</strong></td><td class="text-body-secondary"><%= details.title %></td></tr>
+      <tr class="py-2"><td><strong>Age:</strong></td><td class="text-body-secondary"><%= details.age %></td></tr>
+      <tr class="py-2"><td><strong>Phone:</strong></td><td class="text-body-secondary"><%= details.phone %></td></tr>
+      <tr class="py-2"><td><strong>Email:</strong></td><td class="text-body-secondary"><%= details.email %></td></tr>
+    </table>
+  <% else %>
+    <p class="text-danger">No details found.</p>
+  <% end %>
+</div>

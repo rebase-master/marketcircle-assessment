@@ -5,11 +5,20 @@ class PeopleController < ApplicationController
   before_action :set_person, only: [:show]
   skip_before_action :verify_authenticity_token
 
+  def index
+    @people = Person.all
+  end
+
   def show
-    if @person
-      render json: @person.to_json(include: :detail), status: :ok
-    else
-      render json: { error: "Person not found by id: #{params[:id]}" }, status: :unprocessable_entity
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.replace(
+          'person-details',
+          partial: 'people/show',
+          locals: { details: @person&.detail }
+        )
+      end
+      format.json { render json: { details: @person&.detail } }
     end
   end
 
@@ -28,7 +37,7 @@ class PeopleController < ApplicationController
   def set_person
     @person = Person.includes(:detail).find(params[:id])
   rescue StandardError
-    @person = { message: 'Record not found!' }
+    @person = nil
   end
 
   def person_params

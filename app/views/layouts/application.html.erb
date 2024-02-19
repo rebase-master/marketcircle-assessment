@@ -9,8 +9,10 @@
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
-
-  <body>
+  <body class="bg-warning bg-gradient">
+    <div class="block text-center py-5">
+      <h1 class="fw-light text-white">MarketCircle Team</h1>
+    </div>
     <%= yield %>
   </body>
 </html>

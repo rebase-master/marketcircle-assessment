@@ -1,0 +1,8 @@
+<%#= turbo_stream.replace "people" do %>
+<% @details.each do |detail| %>
+  <%= render partial: "people/show", locals: { person: @person, details: @details } %>
+<% end %>
+<%# end %>
+<%#= turbo_stream.replace "people" do %>
+  <%#= render partial: "people/show", locals: { person: @person, details: @details } %>
+<%# end %>
