@@ -10,15 +10,24 @@ class PeopleController < ApplicationController
   end
 
   def show
+    unless @person
+      render json: { error: 'Person not found!' }, status: :not_found
+      return
+    end
+
+    person_details = ActiveModelSerializers::SerializableResource
+                     .new(@person.detail, serializer: DetailSerializer)
+                     .as_json
+
     respond_to do |format|
       format.turbo_stream do
         render turbo_stream: turbo_stream.replace(
           'person-details',
           partial: 'people/show',
-          locals: { details: @person&.detail }
+          locals: { details: person_details }
         )
       end
-      format.json { render json: { details: @person&.detail } }
+      format.json { render json: person_details }
     end
   end
 
@@ -30,6 +39,8 @@ class PeopleController < ApplicationController
     else
       render json: @person.errors, status: :unprocessable_entity
     end
+  rescue StandardError => e
+    render json: { error: e.message }
   end
 
   private

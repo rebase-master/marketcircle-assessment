@@ -2,24 +2,19 @@
 
 # Handle Person details ops
 class DetailsController < ApplicationController
-  before_action :set_person, only: [:index, :create]
-  before_action :set_detail, only: [:show, :update, :destroy]
+  before_action :set_person, only: %i[create]
+  before_action :set_detail, only: %i[update destroy]
+  skip_before_action :verify_authenticity_token
 
-  # GET /people/:person_id/details
-  def index
-    @details = @person.details
-    render json: @details
-  end
-
-  # GET /people/:person_id/details/:id
-  def show
-    render json: @detail
-  end
 
   # POST /people/:person_id/details
   def create
-    @detail = @person.details.build(detail_params)
+    unless @person
+      render json: { error: 'Person not found!' }, status: :not_found
+      return
+    end
 
+    @detail = @person.build_detail(detail_params)
     if @detail.save
       render json: @detail, status: :created
     else
@@ -29,6 +24,11 @@ class DetailsController < ApplicationController
 
   # PATCH/PUT /people/:person_id/details/:id
   def update
+    unless @detail
+      render json: { error: 'Detail not found!' }, status: :not_found
+      return
+    end
+
     if @detail.update(detail_params)
       render json: @detail
     else
@@ -38,6 +38,11 @@ class DetailsController < ApplicationController
 
   # DELETE /people/:person_id/details/:id
   def destroy
+    unless @detail
+      render json: { error: 'Detail not found!' }, status: :not_found
+      return
+    end
+
     @detail.destroy
     head :no_content
   end
@@ -46,10 +51,14 @@ class DetailsController < ApplicationController
 
   def set_person
     @person = Person.find(params[:person_id])
+  rescue StandardError
+    @person = nil
   end
 
   def set_detail
-    @detail = Detail.find(params[:id])
+    @detail = Detail.find_by(id: params[:id], person_id: params[:person_id])
+  rescue StandardError
+    @detail = nil
   end
 
   def detail_params

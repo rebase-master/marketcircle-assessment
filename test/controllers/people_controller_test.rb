@@ -7,6 +7,4 @@ class PeopleControllerTest < ActionDispatch::IntegrationTest
     get people_url
     assert_response :success
   end
-
-  # Add more tests for other actions as needed
 end
