@@ -1,7 +1,7 @@
 <div class="container">
   <div class="people-list row">
     <div class="col-sm-6 col-md-6 offset-lg-1 col-lg-4">
-      <table class="table table-bordered rounded table-striped table-hoverq align-middle col-sm-3 text-body-secondary">
+      <table class="table table-bordered rounded table-striped align-middle col-sm-3 text-body-secondary">
         <caption><%= @people.size %> People</caption>
         <thead>
         <th>#</th>
@@ -10,10 +10,9 @@
         <% @people.each_with_index do |person, index| %>
           <tr>
             <td  class="text-center text-body-secondary"><%= index+1 %></td>
-            <td>
-              <%= link_to person_path(person), data: { turbo_method: :get, turbo_stream: true },
-                          class: 'link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover' do %>
-                <%= person.name %>
+            <td class="clearfix">
+              <%= turbo_frame_tag person do %>
+                <%= render partial: 'person', locals: { person: person } %>
               <% end %>
             </td>
           </tr>
@@ -21,7 +20,7 @@
       </table>
     </div>
     <div class="col-sm-6 col-md-6 col-lg-6">
-      <div id="person-details"></div>
+      <div id="person_details"></div>
     </div>
   </div>
 

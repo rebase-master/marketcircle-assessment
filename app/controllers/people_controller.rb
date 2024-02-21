@@ -2,7 +2,7 @@
 
 # Handle people show and create actions
 class PeopleController < ApplicationController
-  before_action :set_person, only: [:show]
+  before_action :set_person, only: [:show, :destroy]
   skip_before_action :verify_authenticity_token
 
   def index
@@ -14,21 +14,11 @@ class PeopleController < ApplicationController
       render json: { error: 'Person not found!' }, status: :not_found
       return
     end
-
-    person_details = ActiveModelSerializers::SerializableResource
-                     .new(@person.detail, serializer: DetailSerializer)
-                     .as_json
-
-    respond_to do |format|
-      format.turbo_stream do
-        render turbo_stream: turbo_stream.replace(
-          'person-details',
-          partial: 'people/show',
-          locals: { details: person_details }
-        )
-      end
-      format.json { render json: person_details }
-    end
+    render turbo_stream: turbo_stream.replace(
+      "person_#{@person.id}",
+      partial: 'people/person',
+      locals: { person: @person }
+    )
   end
 
   def create
@@ -41,6 +31,34 @@ class PeopleController < ApplicationController
     end
   rescue StandardError => e
     render json: { error: e.message }
+  end
+
+  def edit
+    @person = Person.find(params[:id])
+  end
+
+  def update
+    @person = Person.find(params[:id])
+    respond_to do |format|
+      if @person.update(person_params)
+        format.html { redirect_to person_url, notice: 'Person was successfully updated' }
+      else
+        format.html { render :edit, status: :unprocessable_entity }
+      end
+    end
+  rescue StandardError => e
+    render json: { error: e.message }
+  end
+
+  # DELETE /people/:id
+  def destroy
+    unless @person
+      render json: { error: 'Detail not found!' }, status: :not_found
+      return
+    end
+
+    @person.destroy
+    head :no_content
   end
 
   private

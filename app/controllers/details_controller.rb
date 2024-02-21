@@ -2,10 +2,30 @@
 
 # Handle Person details ops
 class DetailsController < ApplicationController
-  before_action :set_person, only: %i[create]
+  before_action :set_person, only: %i[create new edit index update]
   before_action :set_detail, only: %i[update destroy]
   skip_before_action :verify_authenticity_token
 
+  def index
+    unless @person
+      render json: { error: 'Person not found!' }, status: :not_found
+      return
+    end
+
+    person_details = begin
+                      ActiveModelSerializers::SerializableResource
+                        .new(@person.detail, serializer: DetailSerializer)
+                        .as_json
+                     rescue StandardError
+                      nil
+                     end
+
+    render turbo_stream: turbo_stream.replace(
+      'person_details',
+      partial: 'people/show',
+      locals: { details: person_details }
+    )
+  end
 
   # POST /people/:person_id/details
   def create
@@ -16,10 +36,29 @@ class DetailsController < ApplicationController
 
     @detail = @person.build_detail(detail_params)
     if @detail.save
-      render json: @detail, status: :created
+      person_details = ActiveModelSerializers::SerializableResource
+                         .new(@detail, serializer: DetailSerializer)
+                         .as_json
+      render turbo_stream: turbo_stream.replace(
+        'person_details',
+        partial: 'people/show',
+        locals: { details: person_details }
+      )
     else
-      render json: @detail.errors, status: :unprocessable_entity
+      render turbo_stream: turbo_stream.replace(
+        'person_details',
+        partial: 'details/create_form',
+        locals: { person: @person, detail: @detail, errors: @detail.errors.full_messages }
+      )
     end
+  end
+
+  def new
+    @detail = Detail.new
+  end
+
+  def edit
+    @detail = @person&.detail
   end
 
   # PATCH/PUT /people/:person_id/details/:id
@@ -30,9 +69,20 @@ class DetailsController < ApplicationController
     end
 
     if @detail.update(detail_params)
-      render json: @detail
+      person_details = ActiveModelSerializers::SerializableResource
+                       .new(@detail, serializer: DetailSerializer)
+                       .as_json
+      render turbo_stream: turbo_stream.replace(
+        'person_details',
+        partial: 'people/show',
+        locals: { details: person_details }
+      )
     else
-      render json: @detail.errors, status: :unprocessable_entity
+      render turbo_stream: turbo_stream.replace(
+        'person_details',
+        partial: 'details/update_form',
+        locals: { person: @person, errors: @detail.errors.full_messages }
+      )
     end
   end
 
