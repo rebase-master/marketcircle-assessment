@@ -1,11 +1,27 @@
-<div id="person-details">
-  <% if details %>
-    <table class="table table-warning table-hover table-striped-columns">
-      <% details.each do |attr, value| %>
-        <%= filter_non_empty_attributes(attr, value) %>
-      <% end %>
-    </table>
-  <% else %>
-    <p class="text-danger">No details found.</p>
-  <% end %>
-</div>
+<%= turbo_frame_tag "person_details" do %>
+  <div id="person-details">
+    <% if details %>
+      <table class="table table-warning table-hover table-striped-columns">
+        <tr class="text-end">
+          <td colspan="2">
+            <%= link_to edit_person_detail_path(details[:person_id]), data: { turbo_method: :get, turbo_stream: true },
+                        class: 'float-end ms-2 link-secondary icon-link icon-link-hover', style: "--bs-icon-link-transform: translate3d(0, -.125rem, 0);" do %>
+              <i class="bi bi-pencil-square"></i>
+            <% end %>
+          </td>
+        </tr>
+        <% details.each do |attr, value| %>
+          <%= filter_non_empty_attributes(attr, value) %>
+        <% end %>
+      </table>
+    <% else %>
+      <table class="table table-warning table-hover table-striped-columns">
+        <tr class="text-end">
+          <td colspan="2">
+            <%= button_to "+ Add Details", new_person_detail_path, method: :get, class: "btn btn-sm btn-primary" %>
+          </td>
+        </tr>
+      </table>
+    <% end %>
+  </div>
+<% end %>

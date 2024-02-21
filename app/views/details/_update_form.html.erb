@@ -1,0 +1,52 @@
+<div id="person_details">
+  <%= form_with(model: detail, url: person_detail_path(person, detail), method: :put) do |f| %>
+  <div class="mb-2">
+    <div id="person-details-error">
+      <% if defined?(errors) && errors.present? %>
+        <div class="alert alert-danger">
+          <ul>
+            <% for error in errors %>
+              <li><%= error %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+    </div>
+    <table class="table table-warning table-striped-columns">
+      <tr>
+        <td><%= f.label :title, :class => 'form-label' %></td>
+        <td>
+          <%= f.text_field :title, placeholder: "Title", class: "mb-1 form-control form-control-sm" %>
+        </td>
+      </tr>
+      <tr>
+        <td><%= f.label :age, :class => 'form-label' %></td>
+        <td>
+          <%= f.text_field :age, placeholder: "Age", class: "mb-1 form-control form-control-sm" %>
+        </td>
+      </tr>
+      <tr>
+        <td><%= f.label :phone, :class => 'form-label' %></td>
+        <td>
+          <%= f.text_field :phone, placeholder: "Phone", class: "mb-1 form-control form-control-sm" %>
+        </td>
+      </tr>
+      <tr>
+        <td><%= f.label :email, :class => 'form-label' %></td>
+        <td>
+          <%= f.text_field :email, placeholder: "Email", class: "mb-1 form-control form-control-sm" %>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <div class="text-center">
+            <%= f.submit "Save", class: "btn btn-sm btn-primary" %>
+            <%= link_to "Cancel", person_details_path(person), data: { turbo_method: :get, turbo_stream: true },
+                        class: 'btn btn-sm btn-danger ' %>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+<% end %>
+</div>
